@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たのしい ずけい & タングラム & てんかいず - かんたん算数サポート</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap');
+        
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 押し心地のある大きな立体風ボタン */
+        .btn-pop {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-pop:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #94a3b8 !important;
+        }
+
+        /* アニメーション演出 */
+        @keyframes celebrate {
+            0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .celebrate-anim {
+            animation: celebrate 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(244, 63, 94, 0); }
+        }
+        .pulse-active {
+            animation: pulse-glow 1.5s infinite;
+        }
+
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .bounce-gentle {
+            animation: bounce-gentle 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-amber-50 min-h-screen text-slate-800 flex flex-col justify-between select-none">
+
+    <header class="bg-white border-b-4 border-amber-300 px-3 py-2 sm:px-4 sm:py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button id="btn-home" onclick="showScreen('menu')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-3 py-2 rounded-2xl flex items-center shadow-md btn-pop text-sm sm:text-base border-b-4 border-amber-600">
+                    <i class="fa-solid fa-house mr-1.5 text-lg"></i>
+                    <span>おうち</span>
+                </button>
+                <h1 class="text-base sm:text-2xl font-black text-amber-900 tracking-wide flex items-center">
+                    <i class="fa-solid fa-shapes mr-1.5 text-amber-500"></i>
+                    <span>ずけい・タングラム・てんかいず</span>
+                </h1>
+            </div>
+
+            <!-- 音声・効果音設定コントロール -->
+            <div class="flex items-center space-x-2">
+                <button id="btn-toggle-speech" onclick="toggleSpeech()" class="bg-sky-100 border-2 border-sky-300 text-sky-800 font-black px-2.5 py-1.5 rounded-xl text-xs sm:text-sm hover:bg-sky-200">
+                    <i id="speech-icon" class="fa-solid fa-bullhorn mr-1"></i>
+                    <span id="speech-status">よみあげ: ON</span>
+                </button>
+                <button id="btn-toggle-sound" onclick="toggleSound()" class="bg-emerald-100 border-2 border-emerald-300 text-emerald-800 font-black px-2.5 py-1.5 rounded-xl text-xs sm:text-sm hover:bg-emerald-200">
+                    <i id="sound-icon" class="fa-solid fa-volume-high mr-1"></i>
+                    <span id="sound-status">おと: ON</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto p-3 sm:p-5 flex-grow flex flex-col justify-center">
+
+        <!-- ================= メニュー画面 ================= -->
+        <section id="screen-menu" class="space-y-5 text-center py-2">
+            <div class="bg-white p-5 sm:p-7 rounded-3xl border-4 border-amber-200 shadow-lg">
+                <div class="inline-block bg-amber-100 text-amber-900 font-black px-4 py-1 rounded-full text-sm sm:text-base mb-2 bounce-gentle">
+                    あそびたいものを えらんでね！
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black text-amber-950 mb-6">
+                    かたちで あそぼう！
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- モード1 -->
+                    <button onclick="startMode1()" class="bg-sky-100 hover:bg-sky-200 border-4 border-sky-400 p-4 rounded-3xl text-left shadow-md flex items-center space-x-3 btn-pop transition border-b-8 border-sky-500">
+                        <div class="bg-sky-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0">
+                            <i class="fa-solid fa-shapes"></i>
+                        </div>
+                        <div>
+                            <span class="bg-sky-600 text-white text-xs font-black px-2 py-0.5 rounded-full">１ （全12もん）</span>
+                            <h3 class="text-lg sm:text-xl font-black text-sky-950 mt-1">
+                                かたち なあに？
+                            </h3>
+                            <p class="text-xs text-sky-800 font-bold mt-0.5">まる・さんかく・しかく</p>
+                        </div>
+                    </button>
+
+                    <!-- モード2 -->
+                    <button onclick="startMode2()" class="bg-emerald-100 hover:bg-emerald-200 border-4 border-emerald-400 p-4 rounded-3xl text-left shadow-md flex items-center space-x-3 btn-pop transition border-b-8 border-emerald-500">
+                        <div class="bg-emerald-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0">
+                            <i class="fa-solid fa-list-ol"></i>
+                        </div>
+                        <div>
+                            <span class="bg-emerald-700 text-white text-xs font-black px-2 py-0.5 rounded-full">２ （全8もん）</span>
+                            <h3 class="text-lg sm:text-xl font-black text-emerald-950 mt-1">
+                                かずを かぞえよう！
+                            </h3>
+                            <p class="text-xs text-emerald-800 font-bold mt-0.5">1, 2, 3... タップして数える</p>
+                        </div>
+                    </button>
+
+                    <!-- モード3 -->
+                    <button onclick="startMode3()" class="bg-purple-100 hover:bg-purple-200 border-4 border-purple-400 p-4 rounded-3xl text-left shadow-md flex items-center space-x-3 btn-pop transition border-b-8 border-purple-500">
+                        <div class="bg-purple-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0">
+                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                        </div>
+                        <div>
+                            <span class="bg-purple-700 text-white text-xs font-black px-2 py-0.5 rounded-full">３ （全8もん）</span>
+                            <h3 class="text-lg sm:text-xl font-black text-purple-950 mt-1">
+                                どっちが おおきい？
+                            </h3>
+                            <p class="text-xs text-purple-800 font-bold mt-0.5">大きさ・長さを見比べる</p>
+                        </div>
+                    </button>
+
+                    <!-- モード4（タングラム） -->
+                    <button onclick="startMode4()" class="bg-rose-100 hover:bg-rose-200 border-4 border-rose-400 p-4 rounded-3xl text-left shadow-md flex items-center space-x-3 btn-pop transition border-b-8 border-rose-500">
+                        <div class="bg-rose-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0">
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </div>
+                        <div>
+                            <span class="bg-rose-700 text-white text-xs font-black px-2 py-0.5 rounded-full">４ （6ステージ）</span>
+                            <h3 class="text-lg sm:text-xl font-black text-rose-950 mt-1">
+                                タングラム パズル
+                            </h3>
+                            <p class="text-xs text-rose-800 font-bold mt-0.5">かたちを くみたてよう</p>
+                        </div>
+                    </button>
+
+                    <!-- モード5（てんかいず パズル） -->
+                    <button onclick="startMode5()" class="bg-amber-100 hover:bg-amber-200 border-4 border-amber-400 p-4 rounded-3xl text-left shadow-md flex items-center space-x-3 btn-pop transition border-b-8 border-amber-500 sm:col-span-2 lg:col-span-1">
+                        <div class="bg-amber-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div>
+                            <span class="bg-amber-700 text-white text-xs font-black px-2 py-0.5 rounded-full">５ （全8もん）</span>
+                            <h3 class="text-lg sm:text-xl font-black text-amber-950 mt-1">
+                                てんかいず パズル
+                            </h3>
+                            <p class="text-xs text-amber-800 font-bold mt-0.5">はこを たたたむと どうなる？</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-3xl border-4 border-amber-200 shadow-md">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-black text-amber-950 text-base sm:text-lg flex items-center">
+                        <i class="fa-solid fa-star text-amber-400 text-xl mr-2"></i>
+                        <span>ごほうび スタンプ</span>
+                    </h3>
+                    <span id="stamp-count-text" class="text-xs sm:text-sm font-black bg-amber-100 text-amber-900 px-3 py-1 rounded-full">0 / 5 個</span>
+                </div>
+                <div class="flex justify-center space-x-3 sm:space-x-5 py-2" id="stamp-container">
+                    <!-- Dynamic Stamps -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= モード1: かたち なあに？ ================= -->
+        <section id="screen-mode1" class="hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border-4 border-sky-300 shadow-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="bg-sky-500 text-white font-black px-3 py-1 rounded-full text-sm">
+                        かたち なあに？
+                    </span>
+                    <span id="m1-progress" class="font-black text-slate-500 text-sm sm:text-base">だい 1 もん</span>
+                </div>
+
+                <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200 mb-5 text-center relative">
+                    <p id="m1-question-text" class="text-xl sm:text-2xl font-black text-slate-800 leading-snug">
+                        「さんかく（△）」は どれかな？
+                    </p>
+                    <button onclick="readCurrentQuestion()" class="mt-2 bg-sky-500 hover:bg-sky-600 text-white text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow inline-flex items-center btn-pop">
+                        <i class="fa-solid fa-volume-high mr-1.5"></i> もういちど きく
+                    </button>
+                </div>
+
+                <div id="m1-options" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Dynamic Choice Buttons -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= モード2: かずを かぞえよう！ ================= -->
+        <section id="screen-mode2" class="hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border-4 border-emerald-300 shadow-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="bg-emerald-500 text-white font-black px-3 py-1 rounded-full text-sm">
+                        かずを かぞえよう！
+                    </span>
+                    <span id="m2-progress" class="font-black text-slate-500 text-sm sm:text-base">だい 1 もん</span>
+                </div>
+
+                <div class="text-center mb-3">
+                    <p id="m2-instruction" class="text-lg sm:text-xl font-black text-slate-800">
+                        ポンポン タップして かぞえよう！
+                    </p>
+                    <p class="text-xs sm:text-sm text-emerald-700 font-bold mt-1">
+                        ぜんぶで いくつ あるかな？
+                    </p>
+                </div>
+
+                <div id="m2-count-area" class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 min-h-[220px] flex flex-wrap items-center justify-center gap-3 sm:gap-5 my-3">
+                    <!-- Dynamic Countable Shapes -->
+                </div>
+
+                <div class="bg-white p-3 rounded-2xl border-2 border-emerald-200 text-center">
+                    <p class="text-xs font-black text-slate-500 mb-2">こたえを えらんでね：</p>
+                    <div id="m2-choices" class="flex justify-center space-x-3 sm:space-x-5">
+                        <!-- Dynamic Number Choice Buttons -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= モード3: どっちが おおきい？ ================= -->
+        <section id="screen-mode3" class="hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border-4 border-purple-300 shadow-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="bg-purple-500 text-white font-black px-3 py-1 rounded-full text-sm">
+                        どっちが おおきい？
+                    </span>
+                    <span id="m3-progress" class="font-black text-slate-500 text-sm sm:text-base">だい 1 もん</span>
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 mb-5 text-center">
+                    <p id="m3-question-text" class="text-xl sm:text-2xl font-black text-purple-950">
+                        「おおきい」のは どちらかな？
+                    </p>
+                    <button onclick="readCurrentQuestion()" class="mt-2 bg-purple-500 hover:bg-purple-600 text-white text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow inline-flex items-center btn-pop">
+                        <i class="fa-solid fa-volume-high mr-1.5"></i> もういちど きく
+                    </button>
+                </div>
+
+                <div id="m3-options" class="grid grid-cols-2 gap-4 sm:gap-6 min-h-[220px]">
+                    <!-- Dynamic 2 Large Comparison Option Cards -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= モード4: タングラム パズル ================= -->
+        <section id="screen-mode4" class="hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border-4 border-rose-300 shadow-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="bg-rose-500 text-white font-black px-3 py-1 rounded-full text-sm">
+                        タングラム パズル
+                    </span>
+                    <span id="m4-progress" class="font-black text-slate-500 text-sm sm:text-base">ステージ 1 / 6</span>
+                </div>
+
+                <div class="text-center mb-2">
+                    <h3 id="m4-title" class="text-xl sm:text-2xl font-black text-rose-950">
+                        「おうち」を つくろう！
+                    </h3>
+                    <p class="text-xs sm:text-sm font-bold text-rose-700">
+                        下の ピースを選んで、影（枠）をタップしてね！
+                    </p>
+                </div>
+
+                <div id="tangram-canvas-container" class="bg-rose-50 p-4 rounded-2xl border-3 border-dashed border-rose-300 flex justify-center items-center min-h-[220px] relative overflow-hidden">
+                    <!-- Dynamic SVG Tangram Target -->
+                </div>
+
+                <div class="bg-slate-100 p-3 sm:p-4 rounded-2xl border-2 border-slate-200 text-center">
+                    <p class="text-xs font-black text-slate-600 mb-2">
+                        ↓ つかう ピース（タップして えらんでね）：
+                    </p>
+                    <div id="tangram-palette" class="flex justify-center items-center gap-3 sm:gap-6 flex-wrap">
+                        <!-- Dynamic Palette Pieces -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= モード5: てんかいず パズル ================= -->
+        <section id="screen-mode5" class="hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border-4 border-amber-300 shadow-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="bg-amber-500 text-white font-black px-3 py-1 rounded-full text-sm">
+                        てんかいず パズル
+                    </span>
+                    <span id="m5-progress" class="font-black text-slate-500 text-sm sm:text-base">だい 1 もん / 8もん</span>
+                </div>
+
+                <!-- 問題文カード -->
+                <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 mb-4 text-center">
+                    <p id="m5-question-text" class="text-xl sm:text-2xl font-black text-amber-950 leading-snug">
+                        この てんかいず（展開図）を たたむと、どれに なるかな？
+                    </p>
+                    <button onclick="readCurrentQuestion()" class="mt-2 bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow inline-flex items-center btn-pop">
+                        <i class="fa-solid fa-volume-high mr-1.5"></i> もういちど きく
+                    </button>
+                </div>
+
+                <!-- 展開図表示イラスト領域 -->
+                <div id="m5-net-display" class="bg-slate-50 p-4 rounded-2xl border-2 border-amber-200 flex justify-center items-center min-h-[160px] my-3">
+                    <!-- Dynamic Net SVG -->
+                </div>
+
+                <!-- 選択肢ボタン -->
+                <div id="m5-options" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Dynamic Option Buttons -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ほめほめモーダルダイアログ -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-8 border-amber-300 shadow-2xl celebrate-anim">
+            <div id="modal-icon" class="text-7xl mb-2 text-amber-400">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-2xl sm:text-3xl font-black text-slate-800 mb-2">せいかい！</h3>
+            <p id="modal-message" class="text-slate-600 font-bold text-base sm:text-lg mb-6">すごいね！バッチリだよ！</p>
+            
+            <button onclick="closeModal()" class="w-full bg-amber-400 hover:bg-amber-500 border-b-4 border-amber-600 text-amber-950 font-black py-3 rounded-2xl shadow-lg text-xl btn-pop">
+                つぎへ すすむ
+            </button>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-xs text-slate-500 font-bold">
+        特別支援学校 高等部 数学（図形・基礎編）学習サポートアプリ
+    </footer>
+
+    <script>
+        /* ================= 音声・効果音 (Web Audio API & SpeechSynthesis) ================= */
+        let soundEnabled = true;
+        let speechEnabled = true;
+        let audioCtx = null;
+        let currentTextToRead = "";
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // 正解チャイム (ファンファーレ風)
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+                    
+                    gain.gain.setValueAtTime(0.25, now + idx * 0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now + idx * 0.09);
+                    osc.stop(now + idx * 0.09 + 0.3);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        // ポン♪（タップ音・音階アップ付き）
+        function playTapSound(pitchStep = 0) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                const baseFreq = 440;
+                const freq = baseFreq * Math.pow(2, (pitchStep * 2) / 12);
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + 0.12);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } catch (e) { console.error(e); }
+        }
+
+        // 残念音 (ポコッ)
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(180, now + 0.15);
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch (e) { console.error(e); }
+        }
+
+        // 音声読み上げ (Text To Speech)
+        function speakText(text) {
+            currentTextToRead = text;
+            if (!speechEnabled || !('speechSynthesis' in window)) return;
+            
+            window.speechSynthesis.cancel();
+            const cleanText = text.replace(/<[^>]*>/g, '').replace(/[（）()「」]/g, ' ');
+            const uttr = new SpeechSynthesisUtterance(cleanText);
+            uttr.lang = 'ja-JP';
+            uttr.rate = 0.85;
+            uttr.pitch = 1.1;
+            window.speechSynthesis.speak(uttr);
+        }
+
+        function readCurrentQuestion() {
+            if (currentTextToRead) speakText(currentTextToRead);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-status').innerText = soundEnabled ? 'おと: ON' : 'おと: OFF';
+            document.getElementById('sound-icon').className = soundEnabled ? 'fa-solid fa-volume-high mr-1' : 'fa-solid fa-volume-xmark mr-1';
+            if (soundEnabled) playTapSound();
+        }
+
+        function toggleSpeech() {
+            speechEnabled = !speechEnabled;
+            document.getElementById('speech-status').innerText = speechEnabled ? 'よみあげ: ON' : 'よみあげ: OFF';
+            if (!speechEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            } else {
+                readCurrentQuestion();
+            }
+        }
+
+        /* ================= スタンプ & 画面表示制御 ================= */
+        let totalStamps = 0;
+        let nextCallback = null;
+
+        function updateStampsDisplay() {
+            const container = document.getElementById('stamp-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const isStamped = i < totalStamps;
+                const stampEl = document.createElement('div');
+                stampEl.className = `w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 flex items-center justify-center text-xl sm:text-3xl transition-transform duration-300 ${
+                    isStamped ? 'bg-amber-400 border-amber-500 text-white scale-110 shadow-md' : 'bg-slate-100 border-slate-300 text-slate-300'
+                }`;
+                stampEl.innerHTML = isStamped ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
+                container.appendChild(stampEl);
+            }
+            document.getElementById('stamp-count-text').innerText = `${totalStamps} / 5 個`;
+        }
+
+        function addStamp() {
+            if (totalStamps < 5) {
+                totalStamps++;
+                updateStampsDisplay();
+            }
+        }
+
+        function showScreen(screenId) {
+            playTapSound();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            
+            ['menu', 'mode1', 'mode2', 'mode3', 'mode4', 'mode5'].forEach(id => {
+                document.getElementById(`screen-${id}`).classList.add('hidden');
+            });
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+        }
+
+        function showModal(title, msg, isSuccess, onNext) {
+            if (isSuccess) {
+                playCorrectSound();
+                addStamp();
+                document.getElementById('modal-icon').className = 'text-7xl mb-2 text-emerald-500';
+                document.getElementById('modal-icon').innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                speakText("せいかい！ すごいね！");
+            } else {
+                playWrongSound();
+                document.getElementById('modal-icon').className = 'text-7xl mb-2 text-rose-500';
+                document.getElementById('modal-icon').innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                speakText("もういちど やってみよう！");
+            }
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            nextCallback = onNext;
+            document.getElementById('feedback-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playTapSound();
+            document.getElementById('feedback-modal').classList.add('hidden');
+            if (nextCallback) {
+                nextCallback();
+                nextCallback = null;
+            }
+        }
+
+        /* ================= SVG図形素材定義 ================= */
+        const SVG_SHAPES = {
+            circle: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><circle cx="50" cy="50" r="40" fill="#f59e0b" stroke="#b45309" stroke-width="6"/></svg>`,
+            triangle: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="50,10 90,85 10,85" fill="#22c55e" stroke="#15803d" stroke-width="6"/></svg>`,
+            square: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><rect x="12" y="12" width="76" height="76" fill="#38bdf8" stroke="#0284c7" stroke-width="6" rx="8"/></svg>`,
+            star: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="50,5 63,35 95,38 71,60 78,92 50,75 22,92 29,60 5,38 37,35" fill="#ec4899" stroke="#be185d" stroke-width="5"/></svg>`,
+            diamond: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="50,10 85,50 50,90 15,50" fill="#a855f7" stroke="#6b21a8" stroke-width="5"/></svg>`,
+            onigiri: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="50,10 90,85 10,85" fill="#ffffff" stroke="#334155" stroke-width="5"/><rect x="35" y="60" width="30" height="25" fill="#1e293b" rx="2"/></svg>`,
+            ball: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><circle cx="50" cy="50" r="40" fill="#ef4444" stroke="#991b1b" stroke-width="5"/><path d="M 20 30 Q 50 60 80 30" fill="none" stroke="#ffffff" stroke-width="6"/><path d="M 20 70 Q 50 40 80 70" fill="none" stroke="#ffffff" stroke-width="6"/></svg>`,
+            box: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><rect x="10" y="20" width="80" height="60" fill="#fbbf24" stroke="#d97706" stroke-width="5" rx="6"/><line x1="10" y1="40" x2="90" y2="40" stroke="#d97706" stroke-width="4"/></svg>`,
+            sandwich: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="15,15 85,15 15,85" fill="#fde047" stroke="#ca8a04" stroke-width="5"/><polygon points="20,20 80,20 20,80" fill="#fef08a"/><rect x="18" y="45" width="40" height="10" fill="#ef4444" transform="rotate(-45 38 50)"/></svg>`,
+            donut: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><circle cx="50" cy="50" r="40" fill="#f97316" stroke="#c2410c" stroke-width="5"/><circle cx="50" cy="50" r="16" fill="#fef3c7" stroke="#c2410c" stroke-width="4"/></svg>`,
+            book: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><rect x="15" y="15" width="70" height="70" fill="#06b6d4" stroke="#0e7490" stroke-width="5" rx="4"/><line x1="28" y1="15" x2="28" y2="85" stroke="#ffffff" stroke-width="4"/></svg>`,
+            clock: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><circle cx="50" cy="50" r="40" fill="#ffffff" stroke="#3b82f6" stroke-width="6"/><line x1="50" y1="50" x2="50" y2="25" stroke="#1d4ed8" stroke-width="5"/><line x1="50" y1="50" x2="68" y2="50" stroke="#1d4ed8" stroke-width="5"/><circle cx="50" cy="50" r="4" fill="#1d4ed8"/></svg>`
+        };
+
+        /* ================= モード1: かたち なあに？ (12問) ================= */
+        const mode1Questions = [
+            {
+                qText: "「さんかく（△）」は どれかな？",
+                speech: "さんかくは どれかな？",
+                options: [
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: true },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「まる（〇）」は どれかな？",
+                speech: "まるは どれかな？",
+                options: [
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: true },
+                    { name: "ほし", svg: SVG_SHAPES.star, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「しかく（□）」は どれかな？",
+                speech: "しかくは どれかな？",
+                options: [
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false },
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: true }
+                ]
+            },
+            {
+                qText: "「きらきら ほし（★）」は どれかな？",
+                speech: "ほしは どれかな？",
+                options: [
+                    { name: "ほし", svg: SVG_SHAPES.star, isCorrect: true },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false },
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「おにぎり」と おなじ 形は どれかな？",
+                speech: "おにぎりと おなじ かたちは どれかな？",
+                options: [
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false },
+                    { name: "さんかく", svg: SVG_SHAPES.onigiri, isCorrect: true },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ボール」と おなじ 形は どれかな？",
+                speech: "ボールと おなじ かたちは どれかな？",
+                options: [
+                    { name: "まる", svg: SVG_SHAPES.ball, isCorrect: true },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false },
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「はこ」と おなじ 形は どれかな？",
+                speech: "はこと おなじ かたちは どれかな？",
+                options: [
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false },
+                    { name: "しかく", svg: SVG_SHAPES.box, isCorrect: true }
+                ]
+            },
+            {
+                qText: "「サンドイッチ」と おなじ 形は どれかな？",
+                speech: "サンドイッチと おなじ かたちは どれかな？",
+                options: [
+                    { name: "さんかく", svg: SVG_SHAPES.sandwich, isCorrect: true },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ドーナツ」と おなじ 形は どれかな？",
+                speech: "ドーナツと おなじ かたちは どれかな？",
+                options: [
+                    { name: "ほし", svg: SVG_SHAPES.star, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.donut, isCorrect: true },
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「えほん」と おなじ 形は どれかな？",
+                speech: "えほんと おなじ かたちは どれかな？",
+                options: [
+                    { name: "しかく", svg: SVG_SHAPES.book, isCorrect: true },
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ダイヤ（◆）」は どれかな？",
+                speech: "ダイヤは どれかな？",
+                options: [
+                    { name: "まる", svg: SVG_SHAPES.circle, isCorrect: false },
+                    { name: "ダイヤ", svg: SVG_SHAPES.diamond, isCorrect: true },
+                    { name: "ほし", svg: SVG_SHAPES.star, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「とけい」と おなじ 形は どれかな？",
+                speech: "とけいと おなじ かたちは どれかな？",
+                options: [
+                    { name: "しかく", svg: SVG_SHAPES.square, isCorrect: false },
+                    { name: "さんかく", svg: SVG_SHAPES.triangle, isCorrect: false },
+                    { name: "まる", svg: SVG_SHAPES.clock, isCorrect: true }
+                ]
+            }
+        ];
+
+        let m1Idx = 0;
+
+        function startMode1() {
+            m1Idx = 0;
+            showScreen('mode1');
+            loadMode1Question();
+        }
+
+        function loadMode1Question() {
+            const data = mode1Questions[m1Idx];
+            document.getElementById('m1-progress').innerText = `だい ${m1Idx + 1} もん / ${mode1Questions.length}`;
+            document.getElementById('m1-question-text').innerText = data.qText;
+            
+            speakText(data.speech);
+
+            const container = document.getElementById('m1-options');
+            container.innerHTML = '';
+
+            data.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white hover:bg-sky-50 border-4 border-sky-300 p-4 sm:p-5 rounded-3xl flex flex-col items-center justify-center shadow-lg btn-pop transition border-b-8 border-sky-400";
+                btn.onclick = () => {
+                    if (opt.isCorrect) {
+                        showModal("せいかい！", "よく 見つけられたね！", true, () => {
+                            m1Idx++;
+                            if (m1Idx < mode1Questions.length) loadMode1Question();
+                            else showModal("全問クリア！", "かたちの 名人だね！すごーい！", true, () => showScreen('menu'));
+                        });
+                    } else {
+                        showModal("おしい！", "形を よく 見くらべてみてね！", false, null);
+                    }
+                };
+                btn.innerHTML = `
+                    <div class="mb-2">${opt.svg}</div>
+                    <span class="text-xl font-black text-slate-800">${opt.name}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        /* ================= モード2: かずを かぞえよう！ (8問) ================= */
+        const mode2Questions = [
+            { count: 3, shape: 'circle', color: '#f59e0b', options: [2, 3, 4] },
+            { count: 5, shape: 'square', color: '#38bdf8', options: [4, 5, 6] },
+            { count: 4, shape: 'star', color: '#ec4899', options: [3, 4, 5] },
+            { count: 6, shape: 'triangle', color: '#22c55e', options: [5, 6, 7] },
+            { count: 2, shape: 'apple', color: '#ef4444', options: [1, 2, 3] },
+            { count: 7, shape: 'star', color: '#eab308', options: [6, 7, 8] },
+            { count: 8, shape: 'circle', color: '#a855f7', options: [7, 8, 9] },
+            { count: 5, shape: 'diamond', color: '#06b6d4', options: [4, 5, 6] }
+        ];
+
+        let m2Idx = 0;
+        let m2TappedCount = 0;
+
+        function startMode2() {
+            m2Idx = 0;
+            showScreen('mode2');
+            loadMode2Question();
+        }
+
+        function loadMode2Question() {
+            const data = mode2Questions[m2Idx];
+            m2TappedCount = 0;
+            document.getElementById('m2-progress').innerText = `だい ${m2Idx + 1} もん / ${mode2Questions.length}`;
+            
+            speakText("かたちを タップして かぞえよう！ ぜんぶで いくつ あるかな？");
+
+            const countArea = document.getElementById('m2-count-area');
+            countArea.innerHTML = '';
+
+            for (let i = 0; i < data.count; i++) {
+                const item = document.createElement('button');
+                item.className = "relative p-2 transition-transform duration-200 hover:scale-110 btn-pop";
+                
+                let svgCode = "";
+                if (data.shape === 'circle') svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><circle cx="50" cy="50" r="40" fill="${data.color}" stroke="#b45309" stroke-width="5"/></svg>`;
+                else if (data.shape === 'square') svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><rect x="12" y="12" width="76" height="76" fill="${data.color}" stroke="#0284c7" stroke-width="5" rx="8"/></svg>`;
+                else if (data.shape === 'triangle') svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><polygon points="50,10 90,85 10,85" fill="${data.color}" stroke="#15803d" stroke-width="5"/></svg>`;
+                else if (data.shape === 'diamond') svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><polygon points="50,10 85,50 50,90 15,50" fill="${data.color}" stroke="#0e7490" stroke-width="5"/></svg>`;
+                else if (data.shape === 'apple') svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><circle cx="50" cy="55" r="38" fill="#ef4444" stroke="#991b1b" stroke-width="5"/><path d="M 50 20 Q 55 5 65 10" fill="none" stroke="#15803d" stroke-width="6" stroke-linecap="round"/></svg>`;
+                else svgCode = `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><polygon points="50,5 63,35 95,38 71,60 78,92 50,75 22,92 29,60 5,38 37,35" fill="${data.color}" stroke="#be185d" stroke-width="5"/></svg>`;
+
+                item.innerHTML = `
+                    ${svgCode}
+                    <span class="badge absolute -top-1 -right-1 bg-amber-400 text-amber-950 font-black w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-base shadow hidden">0</span>
+                `;
+
+                item.onclick = function() {
+                    const badge = item.querySelector('.badge');
+                    if (badge.classList.contains('hidden')) {
+                        m2TappedCount++;
+                        playTapSound(m2TappedCount);
+                        badge.innerText = m2TappedCount;
+                        badge.classList.remove('hidden');
+                        badge.classList.add('celebrate-anim');
+                    }
+                };
+
+                countArea.appendChild(item);
+            }
+
+            const choicesContainer = document.getElementById('m2-choices');
+            choicesContainer.innerHTML = '';
+
+            data.options.forEach(num => {
+                const btn = document.createElement('button');
+                btn.className = "bg-emerald-500 hover:bg-emerald-600 text-white font-black text-2xl sm:text-3xl w-20 h-16 sm:w-24 sm:h-20 rounded-2xl shadow-lg border-b-6 border-emerald-700 btn-pop flex items-center justify-center";
+                btn.innerText = `${num} 個`;
+                btn.onclick = () => {
+                    if (num === data.count) {
+                        showModal("せいかい！", `ぜんぶで ${data.count} 個 あったね！`, true, () => {
+                            m2Idx++;
+                            if (m2Idx < mode2Questions.length) loadMode2Question();
+                            else showModal("全問クリア！", "数をかぞえるのが とっても上手だね！", true, () => showScreen('menu'));
+                        });
+                    } else {
+                        showModal("おしい！", "タップして 1, 2, 3... と数えてみてね！", false, null);
+                    }
+                };
+                choicesContainer.appendChild(btn);
+            });
+        }
+
+        /* ================= モード3: どっちが おおきい？ (8問) ================= */
+        const mode3Questions = [
+            {
+                qText: "「おおきい」 さんかくは どちらかな？",
+                speech: "おおきい さんかくは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-32 h-32 sm:w-40 sm:h-40"><polygon points="50,10 95,85 5,85" fill="#a855f7" stroke="#6b21a8" stroke-width="5"/></svg>`, isCorrect: true },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><polygon points="50,10 95,85 5,85" fill="#a855f7" stroke="#6b21a8" stroke-width="5"/></svg>`, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ながーい」 しかくは どちらかな？",
+                speech: "ながーい しかくは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><rect x="25" y="25" width="50" height="50" fill="#38bdf8" stroke="#0284c7" stroke-width="5" rx="6"/></svg>`, isCorrect: false },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-36 h-20 sm:w-44 sm:h-24"><rect x="5" y="25" width="90" height="50" fill="#38bdf8" stroke="#0284c7" stroke-width="5" rx="6"/></svg>`, isCorrect: true }
+                ]
+            },
+            {
+                qText: "「ちいさい」 まるは どちらかな？",
+                speech: "ちいさい まるは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><circle cx="50" cy="50" r="40" fill="#f59e0b" stroke="#b45309" stroke-width="5"/></svg>`, isCorrect: true },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-32 h-32 sm:w-40 sm:h-40"><circle cx="50" cy="50" r="40" fill="#f59e0b" stroke="#b45309" stroke-width="5"/></svg>`, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「たかーい」 木（き）は どちらかな？",
+                speech: "たかーい きは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-32 h-36 sm:w-40 sm:h-44"><polygon points="50,10 85,60 15,60" fill="#22c55e"/><rect x="40" y="60" width="20" height="35" fill="#78350f"/></svg>`, isCorrect: true },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><polygon points="50,20 80,60 20,60" fill="#22c55e"/><rect x="42" y="60" width="16" height="25" fill="#78350f"/></svg>`, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ふとい」 えんぴつは どちらかな？",
+                speech: "ふとい えんぴつは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-16 h-32 sm:w-20 sm:h-36"><rect x="38" y="20" width="24" height="60" fill="#f59e0b" stroke="#b45309" stroke-width="4"/><polygon points="38,20 62,20 50,5" fill="#fde047" stroke="#b45309" stroke-width="3"/></svg>`, isCorrect: false },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-32 h-32 sm:w-36 sm:h-36"><rect x="20" y="20" width="60" height="60" fill="#f59e0b" stroke="#b45309" stroke-width="5"/><polygon points="20,20 80,20 50,5" fill="#fde047" stroke="#b45309" stroke-width="4"/></svg>`, isCorrect: true }
+                ]
+            },
+            {
+                qText: "「ながーい」 でんしゃは どちらかな？",
+                speech: "ながーい でんしゃは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-40 h-20 sm:w-48 sm:h-24"><rect x="5" y="30" width="90" height="40" fill="#ef4444" rx="8"/><circle cx="25" cy="75" r="8" fill="#334155"/><circle cx="75" cy="75" r="8" fill="#334155"/></svg>`, isCorrect: true },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-24 h-20 sm:w-28 sm:h-24"><rect x="20" y="30" width="60" height="40" fill="#ef4444" rx="8"/><circle cx="35" cy="75" r="8" fill="#334155"/><circle cx="65" cy="75" r="8" fill="#334155"/></svg>`, isCorrect: false }
+                ]
+            },
+            {
+                qText: "「ちいさい」 ほしは どちらかな？",
+                speech: "ちいさい ほしは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-32 h-32 sm:w-40 sm:h-40"><polygon points="50,5 63,35 95,38 71,60 78,92 50,75 22,92 29,60 5,38 37,35" fill="#ec4899" stroke="#be185d" stroke-width="5"/></svg>`, isCorrect: false },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-16 h-16 sm:w-20 sm:h-20"><polygon points="50,5 63,35 95,38 71,60 78,92 50,75 22,92 29,60 5,38 37,35" fill="#ec4899" stroke="#be185d" stroke-width="5"/></svg>`, isCorrect: true }
+                ]
+            },
+            {
+                qText: "「たかーい」 ロケットは どちらかな？",
+                speech: "たかーい ロケットは どちらかな？",
+                options: [
+                    { svg: `<svg viewBox="0 0 100 100" class="w-28 h-36 sm:w-32 sm:h-44"><polygon points="50,5 75,35 25,35" fill="#ef4444"/><rect x="25" y="35" width="50" height="55" fill="#38bdf8"/><polygon points="25,65 5,90 25,90" fill="#f59e0b"/><polygon points="75,65 95,90 75,90" fill="#f59e0b"/></svg>`, isCorrect: true },
+                    { svg: `<svg viewBox="0 0 100 100" class="w-20 h-24 sm:w-24 sm:h-28"><polygon points="50,15 75,40 25,40" fill="#ef4444"/><rect x="25" y="40" width="50" height="35" fill="#38bdf8"/><polygon points="25,60 10,75 25,75" fill="#f59e0b"/><polygon points="75,60 90,75 75,75" fill="#f59e0b"/></svg>`, isCorrect: false }
+                ]
+            }
+        ];
+
+        let m3Idx = 0;
+
+        function startMode3() {
+            m3Idx = 0;
+            showScreen('mode3');
+            loadMode3Question();
+        }
+
+        function loadMode3Question() {
+            const data = mode3Questions[m3Idx];
+            document.getElementById('m3-progress').innerText = `だい ${m3Idx + 1} もん / ${mode3Questions.length}`;
+            document.getElementById('m3-question-text').innerText = data.qText;
+
+            speakText(data.speech);
+
+            const container = document.getElementById('m3-options');
+            container.innerHTML = '';
+
+            data.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white hover:bg-purple-50 border-4 border-purple-300 p-4 rounded-3xl flex items-center justify-center shadow-lg btn-pop transition border-b-8 border-purple-400 min-h-[160px]";
+                btn.onclick = () => {
+                    if (opt.isCorrect) {
+                        showModal("せいかい！", "よく 比べられたね！大正解！", true, () => {
+                            m3Idx++;
+                            if (m3Idx < mode3Questions.length) loadMode3Question();
+                            else showModal("全問クリア！", "大きさ・長さを見分ける名人だね！", true, () => showScreen('menu'));
+                        });
+                    } else {
+                        showModal("おしい！", "ふたつの 形を よく見くらべてみてね！", false, null);
+                    }
+                };
+                btn.innerHTML = opt.svg;
+                container.appendChild(btn);
+            });
+        }
+
+        /* ================= モード4: タングラム パズル (6ステージ) ================= */
+        const tangramStages = [
+            {
+                title: "「かたち」を はめよう！",
+                speech: "かたちを 枠にはめよう！",
+                viewBox: "0 0 200 120",
+                slots: [
+                    { id: 's1', targetShape: 'tri', shapeName: 'さんかく', svgPath: `<polygon points="30,20 65,80 5,80" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 's2', targetShape: 'rect', shapeName: 'しかく', svgPath: `<rect x="75" y="25" width="55" height="55" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="6"/>` },
+                    { id: 's3', targetShape: 'circle', shapeName: 'まる', svgPath: `<circle cx="165" cy="52" r="28" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` }
+                ],
+                palette: [
+                    { shapeType: 'rect', color: '#38bdf8', stroke: '#0284c7', svg: `<rect x="10" y="10" width="50" height="50" fill="#38bdf8" stroke="#0284c7" stroke-width="4" rx="6"/>` },
+                    { shapeType: 'tri', color: '#22c55e', stroke: '#15803d', svg: `<polygon points="35,10 60,60 10,60" fill="#22c55e" stroke="#15803d" stroke-width="4"/>` },
+                    { shapeType: 'circle', color: '#f59e0b', stroke: '#b45309', svg: `<circle cx="35" cy="35" r="25" fill="#f59e0b" stroke="#b45309" stroke-width="4"/>` }
+                ]
+            },
+            {
+                title: "タングラム 「おうち」",
+                speech: "さんかくと しかくで おうちを つくろう！",
+                viewBox: "0 0 200 150",
+                slots: [
+                    { id: 'roof', targetShape: 'roof_tri', shapeName: 'やね（さんかく）', svgPath: `<polygon points="100,15 155,70 45,70" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'wall', targetShape: 'house_rect', shapeName: 'かべ（しかく）', svgPath: `<rect x="55" y="70" width="90" height="70" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="4"/>` }
+                ],
+                palette: [
+                    { shapeType: 'house_rect', color: '#f59e0b', stroke: '#b45309', svg: `<rect x="10" y="15" width="60" height="45" fill="#f59e0b" stroke="#b45309" stroke-width="4" rx="4"/>` },
+                    { shapeType: 'roof_tri', color: '#ef4444', stroke: '#b91c1c', svg: `<polygon points="35,10 60,55 10,55" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/>` }
+                ]
+            },
+            {
+                title: "タングラム 「おふね」",
+                speech: "さんかくと しかくで おふねを つくろう！",
+                viewBox: "0 0 200 140",
+                slots: [
+                    { id: 'sail', targetShape: 'sail_tri', shapeName: 'ほ（さんかく）', svgPath: `<polygon points="100,15 140,75 100,75" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'hull', targetShape: 'hull_rect', shapeName: 'ふね（しかく）', svgPath: `<rect x="40" y="80" width="120" height="40" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="6"/>` }
+                ],
+                palette: [
+                    { shapeType: 'hull_rect', color: '#38bdf8', stroke: '#0284c7', svg: `<rect x="5" y="20" width="70" height="25" fill="#38bdf8" stroke="#0284c7" stroke-width="4" rx="4"/>` },
+                    { shapeType: 'sail_tri', color: '#eab308', stroke: '#ca8a04', svg: `<polygon points="45,10 55,55 15,55" fill="#eab308" stroke="#ca8a04" stroke-width="4"/>` }
+                ]
+            },
+            {
+                title: "タングラム 「ロケット」",
+                speech: "さんかくと しかくで ロケットを つくろう！",
+                viewBox: "0 0 200 150",
+                slots: [
+                    { id: 'nose', targetShape: 'rocket_nose', shapeName: 'あたま（さんかく）', svgPath: `<polygon points="100,10 130,50 70,50" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'body', targetShape: 'rocket_body', shapeName: 'どうたい（しかく）', svgPath: `<rect x="70" y="50" width="60" height="60" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="4"/>` },
+                    { id: 'wing_l', targetShape: 'rocket_wing_l', shapeName: 'ひだり はね', svgPath: `<polygon points="70,80 70,110 40,110" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'wing_r', targetShape: 'rocket_wing_r', shapeName: 'みぎ はね', svgPath: `<polygon points="130,80 130,110 160,110" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` }
+                ],
+                palette: [
+                    { shapeType: 'rocket_wing_l', color: '#f97316', stroke: '#c2410c', svg: `<polygon points="45,15 45,50 15,50" fill="#f97316" stroke="#c2410c" stroke-width="4"/>` },
+                    { shapeType: 'rocket_body', color: '#06b6d4', stroke: '#0e7490', svg: `<rect x="15" y="15" width="40" height="40" fill="#06b6d4" stroke="#0e7490" stroke-width="4" rx="4"/>` },
+                    { shapeType: 'rocket_nose', color: '#ef4444', stroke: '#b91c1c', svg: `<polygon points="35,10 55,50 15,50" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/>` },
+                    { shapeType: 'rocket_wing_r', color: '#f97316', stroke: '#c2410c', svg: `<polygon points="15,15 15,50 45,50" fill="#f97316" stroke="#c2410c" stroke-width="4"/>` }
+                ]
+            },
+            {
+                title: "タングラム 「おさかな」",
+                speech: "かたちを あわせて おさかなを つくろう！",
+                viewBox: "0 0 200 130",
+                slots: [
+                    { id: 'head', targetShape: 'fish_head', shapeName: 'あたま', svgPath: `<polygon points="50,65 100,25 100,105" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'body', targetShape: 'fish_body', shapeName: 'からだ', svgPath: `<rect x="100" y="40" width="50" height="50" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="4"/>` },
+                    { id: 'tail', targetShape: 'fish_tail', shapeName: 'しっぽ', svgPath: `<polygon points="150,65 190,30 190,100" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` }
+                ],
+                palette: [
+                    { shapeType: 'fish_body', color: '#a855f7', stroke: '#6b21a8', svg: `<rect x="15" y="15" width="40" height="40" fill="#a855f7" stroke="#6b21a8" stroke-width="4" rx="4"/>` },
+                    { shapeType: 'fish_head', color: '#ec4899', stroke: '#be185d', svg: `<polygon points="15,35 50,10 50,60" fill="#ec4899" stroke="#be185d" stroke-width="4"/>` },
+                    { shapeType: 'fish_tail', color: '#10b981', stroke: '#047857', svg: `<polygon points="15,35 50,10 50,60" fill="#10b981" stroke="#047857" stroke-width="4"/>` }
+                ]
+            },
+            {
+                title: "タングラム 「木（き）と おひさま」",
+                speech: "おひさまと きを つくろう！",
+                viewBox: "0 0 200 150",
+                slots: [
+                    { id: 'sun', targetShape: 'sun_circle', shapeName: 'おひさま', svgPath: `<circle cx="40" cy="40" r="22" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'leaf', targetShape: 'tree_leaf', shapeName: 'はっぱ', svgPath: `<polygon points="140,20 180,75 100,75" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5"/>` },
+                    { id: 'trunk', targetShape: 'tree_trunk', shapeName: 'みき', svgPath: `<rect x="125" y="75" width="30" height="55" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4" stroke-dasharray="5,5" rx="4"/>` }
+                ],
+                palette: [
+                    { shapeType: 'sun_circle', color: '#eab308', stroke: '#ca8a04', svg: `<circle cx="35" cy="35" r="22" fill="#eab308" stroke="#ca8a04" stroke-width="4"/>` },
+                    { shapeType: 'tree_trunk', color: '#b45309', stroke: '#78350f', svg: `<rect x="20" y="10" width="25" height="45" fill="#b45309" stroke="#78350f" stroke-width="4" rx="4"/>` },
+                    { shapeType: 'tree_leaf', color: '#22c55e', stroke: '#15803d', svg: `<polygon points="35,10 60,55 10,55" fill="#22c55e" stroke="#15803d" stroke-width="4"/>` }
+                ]
+            }
+        ];
+
+        let m4StageIdx = 0;
+        let selectedPaletteShape = null;
+        let m4CompletedSlots = {};
+
+        function startMode4() {
+            m4StageIdx = 0;
+            showScreen('mode4');
+            loadMode4Stage();
+        }
+
+        function loadMode4Stage() {
+            const stage = tangramStages[m4StageIdx];
+            m4CompletedSlots = {};
+            selectedPaletteShape = null;
+
+            document.getElementById('m4-progress').innerText = `ステージ ${m4StageIdx + 1} / ${tangramStages.length}`;
+            document.getElementById('m4-title').innerText = stage.title;
+
+            speakText(stage.speech);
+
+            const canvasContainer = document.getElementById('tangram-canvas-container');
+            canvasContainer.innerHTML = `
+                <svg id="tangram-svg" viewBox="${stage.viewBox}" class="w-full max-w-md h-auto max-h-[240px]">
+                    ${stage.slots.map(s => `<g id="slot-group-${s.id}" onclick="tryFitSlot('${s.id}')" class="cursor-pointer">${s.svgPath}</g>`).join('')}
+                </svg>
+            `;
+
+            renderTangramPalette();
+        }
+
+        function renderTangramPalette() {
+            const stage = tangramStages[m4StageIdx];
+            const paletteContainer = document.getElementById('tangram-palette');
+            paletteContainer.innerHTML = '';
+
+            stage.palette.forEach((p, idx) => {
+                const isUsed = Object.values(m4CompletedSlots).includes(p.shapeType);
+                if (isUsed) return;
+
+                const pieceBtn = document.createElement('button');
+                pieceBtn.className = `p-2 bg-white rounded-2xl border-4 shadow-md transition btn-pop ${
+                    selectedPaletteShape === p.shapeType ? 'border-rose-500 ring-4 ring-rose-300 bg-rose-50 pulse-active' : 'border-amber-300 hover:bg-amber-50'
+                }`;
+                pieceBtn.onclick = () => selectPalettePiece(p.shapeType);
+                pieceBtn.innerHTML = `<svg viewBox="0 0 70 70" class="w-14 h-14 sm:w-16 sm:h-16">${p.svg}</svg>`;
+                paletteContainer.appendChild(pieceBtn);
+            });
+        }
+
+        function selectPalettePiece(shapeType) {
+            playTapSound();
+            selectedPaletteShape = shapeType;
+            renderTangramPalette();
+        }
+
+        function tryFitSlot(slotId) {
+            const stage = tangramStages[m4StageIdx];
+            const slot = stage.slots.find(s => s.id === slotId);
+
+            if (m4CompletedSlots[slotId]) return;
+
+            if (!selectedPaletteShape) {
+                speakText("まず 下の ピースを タップしてね！");
+                return;
+            }
+
+            if (selectedPaletteShape === slot.targetShape) {
+                playCorrectSound();
+                m4CompletedSlots[slotId] = selectedPaletteShape;
+
+                const paletteItem = stage.palette.find(p => p.shapeType === selectedPaletteShape);
+                const slotGroup = document.getElementById(`slot-group-${slotId}`);
+
+                if (slot.targetShape === 'tri' || slot.targetShape === 's1') {
+                    slotGroup.innerHTML = `<polygon points="30,20 65,80 5,80" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'rect' || slot.targetShape === 's2') {
+                    slotGroup.innerHTML = `<rect x="75" y="25" width="55" height="55" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="6" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'circle' || slot.targetShape === 's3') {
+                    slotGroup.innerHTML = `<circle cx="165" cy="52" r="28" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'roof_tri') {
+                    slotGroup.innerHTML = `<polygon points="100,15 155,70 45,70" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'house_rect') {
+                    slotGroup.innerHTML = `<rect x="55" y="70" width="90" height="70" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'sail_tri') {
+                    slotGroup.innerHTML = `<polygon points="100,15 140,75 100,75" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'hull_rect') {
+                    slotGroup.innerHTML = `<rect x="40" y="80" width="120" height="40" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="6" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'rocket_nose') {
+                    slotGroup.innerHTML = `<polygon points="100,10 130,50 70,50" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'rocket_body') {
+                    slotGroup.innerHTML = `<rect x="70" y="50" width="60" height="60" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'rocket_wing_l') {
+                    slotGroup.innerHTML = `<polygon points="70,80 70,110 40,110" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'rocket_wing_r') {
+                    slotGroup.innerHTML = `<polygon points="130,80 130,110 160,110" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'fish_head') {
+                    slotGroup.innerHTML = `<polygon points="50,65 100,25 100,105" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'fish_body') {
+                    slotGroup.innerHTML = `<rect x="100" y="40" width="50" height="50" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'fish_tail') {
+                    slotGroup.innerHTML = `<polygon points="150,65 190,30 190,100" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'sun_circle') {
+                    slotGroup.innerHTML = `<circle cx="40" cy="40" r="22" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'tree_leaf') {
+                    slotGroup.innerHTML = `<polygon points="140,20 180,75 100,75" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" class="celebrate-anim"/>`;
+                } else if (slot.targetShape === 'tree_trunk') {
+                    slotGroup.innerHTML = `<rect x="125" y="75" width="30" height="55" fill="${paletteItem.color}" stroke="${paletteItem.stroke}" stroke-width="4" rx="4" class="celebrate-anim"/>`;
+                }
+
+                selectedPaletteShape = null;
+                renderTangramPalette();
+
+                if (Object.keys(m4CompletedSlots).length === stage.slots.length) {
+                    showModal("かんせい！", "ぴったり はまったね！すごーい！", true, () => {
+                        m4StageIdx++;
+                        if (m4StageIdx < tangramStages.length) loadMode4Stage();
+                        else showModal("全ステージ クリア！", "タングラム パズルの 名人だね！", true, () => showScreen('menu'));
+                    });
+                }
+            } else {
+                showModal("ちがう 枠みたい", "形を よく 見くらべてみてね！", false, null);
+            }
+        }
+
+        /* ================= モード5: てんかいず パズル (8問) ================= */
+        const mode5Questions = [
+            {
+                qText: "この てんかいずを たたむと、どれに なるかな？",
+                speech: "この てんかいずを たたむと、どれに なるかな？",
+                netSvg: `<svg viewBox="0 0 160 120" class="w-36 h-28 sm:w-44 sm:h-32">
+                    <g fill="#38bdf8" stroke="#0284c7" stroke-width="3" rx="2">
+                        <rect x="60" y="5" width="30" height="30"/>
+                        <rect x="30" y="38" width="30" height="30"/>
+                        <rect x="60" y="38" width="30" height="30"/>
+                        <rect x="90" y="38" width="30" height="30"/>
+                        <rect x="60" y="71" width="30" height="30"/>
+                        <rect x="60" y="104" width="30" height="30"/>
+                    </g>
+                </svg>`,
+                options: [
+                    {
+                        name: "さいころ（立方体）",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><rect x="20" y="30" width="50" height="50" fill="#fbbf24" stroke="#d97706" stroke-width="4" rx="6"/><path d="M20,30 L40,15 L90,15 L70,30 Z" fill="#fef08a" stroke="#d97706" stroke-width="4"/><path d="M70,30 L90,15 L90,65 L70,80 Z" fill="#f59e0b" stroke="#d97706" stroke-width="4"/><circle cx="45" cy="55" r="5" fill="#d97706"/></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "ボール（まんまる）",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><circle cx="50" cy="50" r="40" fill="#ef4444" stroke="#991b1b" stroke-width="5"/><path d="M 20 30 Q 50 60 80 30" fill="none" stroke="#ffffff" stroke-width="5"/></svg>`,
+                        isCorrect: false
+                    },
+                    {
+                        name: "テント（三角すい）",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><polygon points="50,15 90,80 10,80" fill="#22c55e" stroke="#15803d" stroke-width="5"/><polygon points="50,15 50,80 10,80" fill="#86efac"/></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "この てnかいずを たたむと、どれに なるかな？",
+                speech: "この てんかいずを たたむと、どれに なるかな？",
+                netSvg: `<svg viewBox="0 0 160 120" class="w-36 h-28 sm:w-44 sm:h-32">
+                    <rect x="40" y="35" width="80" height="50" fill="#38bdf8" stroke="#0284c7" stroke-width="3" rx="3"/>
+                    <circle cx="80" cy="18" r="14" fill="#06b6d4" stroke="#0e7490" stroke-width="3"/>
+                    <circle cx="80" cy="102" r="14" fill="#06b6d4" stroke="#0e7490" stroke-width="3"/>
+                </svg>`,
+                options: [
+                    {
+                        name: "さいころ",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><rect x="20" y="30" width="50" height="50" fill="#fbbf24" stroke="#d97706" stroke-width="4" rx="6"/><path d="M20,30 L40,15 L90,15 L70,30 Z" fill="#fef08a" stroke="#d97706" stroke-width="4"/><path d="M70,30 L90,15 L90,65 L70,80 Z" fill="#f59e0b" stroke="#d97706" stroke-width="4"/></svg>`,
+                        isCorrect: false
+                    },
+                    {
+                        name: "ジュースの かん（円柱）",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><ellipse cx="50" cy="25" rx="30" ry="12" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/><rect x="20" y="25" width="60" height="50" fill="#0284c7" stroke="#0284c7" stroke-width="1"/><ellipse cx="50" cy="75" rx="30" ry="12" fill="#0284c7" stroke="#0e7490" stroke-width="4"/><ellipse cx="50" cy="25" rx="30" ry="12" fill="#7dd3fc" stroke="#0284c7" stroke-width="3"/></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "おにぎり",
+                        svg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><polygon points="50,15 85,80 15,80" fill="#ffffff" stroke="#334155" stroke-width="5"/><rect x="38" y="55" width="24" height="25" fill="#1e293b"/></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「さいころ（立方体）」に なれる てんかいずは どちらかな？",
+                speech: "さいころに なれる てんかいずは どちらかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><rect x="20" y="30" width="50" height="50" fill="#fbbf24" stroke="#d97706" stroke-width="4" rx="6"/><path d="M20,30 L40,15 L90,15 L70,30 Z" fill="#fef08a" stroke="#d97706" stroke-width="4"/><path d="M70,30 L90,15 L90,65 L70,80 Z" fill="#f59e0b" stroke="#d97706" stroke-width="4"/></svg>`,
+                options: [
+                    {
+                        name: "しかく 6つの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#38bdf8" stroke="#0284c7" stroke-width="3"><rect x="60" y="5" width="28" height="28"/><rect x="30" y="36" width="28" height="28"/><rect x="60" y="36" width="28" height="28"/><rect x="90" y="36" width="28" height="28"/><rect x="60" y="67" width="28" height="28"/><rect x="60" y="98" width="28" height="28"/></g></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "しかくが たらない",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#f43f5e" stroke="#be185d" stroke-width="3"><rect x="30" y="45" width="28" height="28"/><rect x="60" y="45" width="28" height="28"/><rect x="90" y="45" width="28" height="28"/></g></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「テント（三角柱）」の てんかいずは どれかな？",
+                speech: "テントの てんかいずは どれかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><polygon points="50,15 90,80 10,80" fill="#22c55e" stroke="#15803d" stroke-width="5"/><polygon points="50,15 50,80 10,80" fill="#86efac"/></svg>`,
+                options: [
+                    {
+                        name: "さんかく・しかくの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><polygon points="80,15 115,50 45,50" fill="#22c55e" stroke="#15803d" stroke-width="3"/><polygon points="80,110 115,75 45,75" fill="#22c55e" stroke="#15803d" stroke-width="3"/><rect x="50" y="50" width="60" height="25" fill="#86efac" stroke="#15803d" stroke-width="3"/></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "まるだけの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><circle cx="40" cy="60" r="22" fill="#ec4899" stroke="#be185d" stroke-width="3"/><circle cx="120" cy="60" r="22" fill="#ec4899" stroke="#be185d" stroke-width="3"/></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「プレゼントの はこ」を ひらくと（パカッ）、どんな てんかいずに なるかな？",
+                speech: "プレゼントの はこを ひらくと、どんな てんかいずに なるかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><rect x="15" y="25" width="70" height="60" fill="#ec4899" stroke="#be185d" stroke-width="4" rx="6"/><rect x="42" y="25" width="16" height="60" fill="#fde047"/><rect x="15" y="47" width="70" height="16" fill="#fde047"/><path d="M30,25 Q42,5 50,25 Q58,5 70,25" fill="none" stroke="#fde047" stroke-width="6" stroke-linecap="round"/></svg>`,
+                options: [
+                    {
+                        name: "しかく 6つの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#ec4899" stroke="#be185d" stroke-width="3"><rect x="60" y="5" width="28" height="28"/><rect x="30" y="36" width="28" height="28"/><rect x="60" y="36" width="28" height="28"/><rect x="90" y="36" width="28" height="28"/><rect x="60" y="67" width="28" height="28"/><rect x="60" y="98" width="28" height="28"/></g></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "さんかくの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><polygon points="80,15 130,100 30,100" fill="#22c55e" stroke="#15803d" stroke-width="3"/></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「とんがり ぼうし（円錐）」の てんかいずは どれかな？",
+                speech: "とんがり ぼうしの てんかいずは どれかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-20 h-20 sm:w-24 sm:h-24"><polygon points="50,10 85,85 15,85" fill="#f59e0b" stroke="#b45309" stroke-width="4"/><ellipse cx="50" cy="85" rx="35" ry="10" fill="#fbbf24" stroke="#b45309" stroke-width="3"/><circle cx="50" cy="10" r="6" fill="#ef4444"/></svg>`,
+                options: [
+                    {
+                        name: "おうぎ型と まる",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><path d="M 80 15 L 130 85 A 60 60 0 0 1 30 85 Z" fill="#f59e0b" stroke="#b45309" stroke-width="3"/><circle cx="80" cy="100" r="12" fill="#fef08a" stroke="#b45309" stroke-width="3"/></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "しかく 6つ",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#38bdf8" stroke="#0284c7" stroke-width="3"><rect x="60" y="5" width="25" height="25"/><rect x="35" y="33" width="25" height="25"/><rect x="60" y="33" width="25" height="25"/><rect x="85" y="33" width="25" height="25"/><rect x="60" y="61" width="25" height="25"/><rect x="60" y="89" width="25" height="25"/></g></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「おうち（三角柱）」の てんかいずは どれかな？",
+                speech: "おうつの てんかいずは どれかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-24 h-24 sm:w-28 sm:h-28"><polygon points="50,15 85,50 15,50" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/><rect x="15" y="50" width="70" height="40" fill="#f59e0b" stroke="#b45309" stroke-width="4"/><rect x="35" y="65" width="18" height="25" fill="#78350f"/></svg>`,
+                options: [
+                    {
+                        name: "さんかく2つ と しかく3つ",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><polygon points="35,15 65,45 5,45" fill="#ef4444" stroke="#b91c1c" stroke-width="3"/><rect x="35" y="45" width="90" height="30" fill="#f59e0b" stroke="#b45309" stroke-width="3"/><line x1="65" y1="45" x2="65" y2="75" stroke="#b45309" stroke-width="2"/><line x1="95" y1="45" x2="95" y2="75" stroke="#b45309" stroke-width="2"/><polygon points="35,105 65,75 5,75" fill="#ef4444" stroke="#b91c1c" stroke-width="3"/></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "まるだけの てんかいず",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><circle cx="50" cy="60" r="25" fill="#38bdf8" stroke="#0284c7" stroke-width="3"/><circle cx="110" cy="60" r="25" fill="#38bdf8" stroke="#0284c7" stroke-width="3"/></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            },
+            {
+                qText: "「ティッシュの はこ（直方体）」に なれる てんかいずは どれかな？",
+                speech: "ティッシュの はこに なれる てんかいずは どれかな？",
+                netSvg: `<svg viewBox="0 0 100 100" class="w-24 h-20 sm:w-28 sm:h-24"><rect x="10" y="25" width="70" height="45" fill="#a855f7" stroke="#6b21a8" stroke-width="4" rx="4"/><path d="M10,25 L30,10 L100,10 L80,25 Z" fill="#d8b4fe" stroke="#6b21a8" stroke-width="3"/><path d="M80,25 L100,10 L100,55 L80,70 Z" fill="#c084fc" stroke="#6b21a8" stroke-width="3"/><ellipse cx="45" cy="47" rx="20" ry="8" fill="#ffffff" stroke="#6b21a8" stroke-width="2"/></svg>`,
+                options: [
+                    {
+                        name: "ながい しかくが 6つ",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#a855f7" stroke="#6b21a8" stroke-width="3"><rect x="55" y="5" width="40" height="22"/><rect x="15" y="30" width="40" height="22"/><rect x="55" y="30" width="40" height="22"/><rect x="98" y="30" width="40" height="22"/><rect x="55" y="55" width="40" height="22"/><rect x="55" y="80" width="40" height="22"/></g></svg>`,
+                        isCorrect: true
+                    },
+                    {
+                        name: "まるが 6つ",
+                        svg: `<svg viewBox="0 0 160 120" class="w-32 h-24 sm:w-36 sm:h-28"><g fill="#ec4899" stroke="#be185d" stroke-width="3"><circle cx="40" cy="30" r="14"/><circle cx="80" cy="30" r="14"/><circle cx="120" cy="30" r="14"/><circle cx="40" cy="75" r="14"/><circle cx="80" cy="75" r="14"/><circle cx="120" cy="75" r="14"/></g></svg>`,
+                        isCorrect: false
+                    }
+                ]
+            }
+        ];
+
+        let m5Idx = 0;
+
+        function startMode5() {
+            m5Idx = 0;
+            showScreen('mode5');
+            loadMode5Question();
+        }
+
+        function loadMode5Question() {
+            const data = mode5Questions[m5Idx];
+            document.getElementById('m5-progress').innerText = `だい ${m5Idx + 1} もん / ${mode5Questions.length}`;
+            document.getElementById('m5-question-text').innerText = data.qText;
+            document.getElementById('m5-net-display').innerHTML = data.netSvg;
+
+            speakText(data.speech);
+
+            const container = document.getElementById('m5-options');
+            container.innerHTML = '';
+
+            data.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white hover:bg-amber-50 border-4 border-amber-300 p-4 rounded-3xl flex flex-col items-center justify-center shadow-lg btn-pop transition border-b-8 border-amber-400 min-h-[140px]";
+                btn.onclick = () => {
+                    if (opt.isCorrect) {
+                        showModal("せいかい！", "たたむと ぴったり その形に なるね！", true, () => {
+                            m5Idx++;
+                            if (m5Idx < mode5Questions.length) loadMode5Question();
+                            else showModal("全問クリア！", "てんかいずの 名人だね！すごい！", true, () => showScreen('menu'));
+                        });
+                    } else {
+                        showModal("おしい！", "面のかたちや 数を よく見くらべてね！", false, null);
+                    }
+                };
+                btn.innerHTML = `
+                    <div class="mb-2">${opt.svg}</div>
+                    <span class="text-base sm:text-lg font-black text-slate-800">${opt.name}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        window.onload = function() {
+            updateStampsDisplay();
+            showScreen('menu');
+        };
+    </script>
+</body>
+</html>
